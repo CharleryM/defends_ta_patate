@@ -70,7 +70,7 @@ public class Projectile : MonoBehaviour
         // Apply damage to the enemy
         if (target != null)
         {
-            Enemy enemy = target.GetComponent<Enemy>();
+            SweatPotatoEnemy enemy = target.GetComponent<SweatPotatoEnemy>();
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);
@@ -96,7 +96,7 @@ public class Projectile : MonoBehaviour
         // Or any enemy (in case we lost our target)
         else if (other.CompareTag("Enemy"))
         {
-            Enemy enemy = other.GetComponent<Enemy>();
+            SweatPotatoEnemy enemy = other.GetComponent<SweatPotatoEnemy>();
             if (enemy != null)
             {
                 enemy.TakeDamage(damage);

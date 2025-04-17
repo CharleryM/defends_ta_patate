@@ -14,11 +14,11 @@ public class TowerDefenseUI : MonoBehaviour
     public Button restartButton;
     public TextMeshProUGUI instructionText;
     
-    private TowerDefenseGame gameManager;
+    private BasePotato gameManager;
     
     void Start()
     {
-        gameManager = FindObjectOfType<TowerDefenseGame>();
+        gameManager = FindObjectOfType<BasePotato>();
         
         // Set up button listeners
         if (startGameButton != null)

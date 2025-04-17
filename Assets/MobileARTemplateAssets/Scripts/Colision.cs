@@ -11,15 +11,15 @@ public class CollisionHandler : MonoBehaviour
         {
             Debug.Log("💥 Boom ! Ennemi touché par " + gameObject.name);
 
-            // Tente de récupérer le script SweetPotatoEnemy
-            SweetPotatoEnemy enemy = collision.gameObject.GetComponent<SweetPotatoEnemy>();
+            // Tente de récupérer le script SweatPotatoEnemy
+            SweatPotatoEnemy enemy = collision.gameObject.GetComponent<SweatPotatoEnemy>();
             if (enemy != null)
             {
                 enemy.TakeDamage(damageOnCollision);
             }
             else
             {
-                Debug.LogWarning("⚠️ Aucun script SweetPotatoEnemy trouvé sur " + collision.gameObject.name);
+                Debug.LogWarning("⚠️ Aucun script SweatPotatoEnemy trouvé sur " + collision.gameObject.name);
             }
         }
     }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 
-public class TowerDefenseGame : MonoBehaviour
+public class BasePotato : MonoBehaviour
 {
     [Header("AR Components")]
     public ARPlaneManager planeManager;
@@ -47,88 +47,65 @@ public class TowerDefenseGame : MonoBehaviour
         {
             pathManager = gameObject.AddComponent<PathManager>();
         }
-        
-        // Initialize game state
+
         currentLives = startingLives;
         currentMoney = startingMoney;
-        
-        // Update UI
         UpdateUI();
-        
-        // Hide start button until a plane is selected
+
         if (startGameButton != null)
         {
             startGameButton.SetActive(false);
         }
     }
-    
+
     private void Update()
     {
         if (gameStarted) return;
-        
-        // Handle plane selection
+
+        // Plane selection
         if (!placementMode && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             Touch touch = Input.GetTouch(0);
-            
             List<ARRaycastHit> hits = new List<ARRaycastHit>();
+
             if (raycastManager.Raycast(touch.position, hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon))
             {
                 ARPlane plane = planeManager.GetPlane(hits[0].trackableId);
-                
+
                 if (plane != null)
                 {
-                    // Select this plane
                     selectedPlane = plane.gameObject;
-                    
-                    // Create a path on this plane
                     Vector3 hitPosition = hits[0].pose.position;
+
                     pathManager.CreatePath(selectedPlane.transform, hitPosition);
-                    
-                    // Show start button
-                    if (startGameButton != null)
-                    {
-                        startGameButton.SetActive(true);
-                    }
-                    
-                    // Enter placement mode
+                    startGameButton?.SetActive(true);
+
                     placementMode = true;
-                    
-                    // Stop tracking new planes
                     planeManager.enabled = false;
-                    
-                    // Notify UI
-                    if (uiManager != null)
-                    {
-                        uiManager.ShowGameUI();
-                    }
+                    uiManager?.ShowGameUI();
                 }
             }
         }
-        
-        // Handle tower placement in placement mode
+
+        // Tower placement
         if (placementMode && !gameStarted && Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
-            if (currentMoney >= 100) // Check if player can afford tower
+            if (currentMoney >= 100)
             {
                 Touch touch = Input.GetTouch(0);
-                
                 List<ARRaycastHit> hits = new List<ARRaycastHit>();
+
                 if (raycastManager.Raycast(touch.position, hits, UnityEngine.XR.ARSubsystems.TrackableType.PlaneWithinPolygon))
                 {
                     ARPlane plane = planeManager.GetPlane(hits[0].trackableId);
-                    
+
                     if (plane != null && plane.gameObject == selectedPlane)
                     {
-                        // Place tower at hit position
                         Vector3 hitPosition = hits[0].pose.position;
                         GameObject tower = Instantiate(towerPrefab, hitPosition, Quaternion.identity);
-                        
-                        // Add to our list of towers
                         towers.Add(tower);
-                        
-                        // Deduct cost
-                        Tower towerScript = tower.GetComponent<Tower>();
+
+                        PotatoTowerArcher towerScript = tower.GetComponent<PotatoTowerArcher>();
                         if (towerScript != null)
                         {
                             currentMoney -= (int)towerScript.towerCost;
@@ -139,151 +116,116 @@ public class TowerDefenseGame : MonoBehaviour
             }
         }
     }
-    
+
     public void StartGame()
     {
         if (!placementMode) return;
-        
+
         gameStarted = true;
-        
-        // Hide start button
-        if (startGameButton != null)
-        {
-            startGameButton.SetActive(false);
-        }
-        
-        // Start spawning waves
+        startGameButton?.SetActive(false);
         StartCoroutine(SpawnWaves());
     }
-    
+
     private IEnumerator SpawnWaves()
     {
         for (int wave = 1; wave <= wavesCount; wave++)
         {
             currentWave = wave;
             UpdateUI();
-            
+
             yield return StartCoroutine(SpawnWave(wave));
-            
-            // Wait between waves
             yield return new WaitForSeconds(timeBetweenWaves);
         }
     }
-    
+
     private IEnumerator SpawnWave(int waveNumber)
     {
-        int enemiesToSpawn = enemiesPerWave + (waveNumber - 1) * 2; // More enemies in later waves
-        
+        int enemiesToSpawn = enemiesPerWave + (waveNumber - 1) * 2;
+
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             SpawnEnemy(waveNumber);
             yield return new WaitForSeconds(timeBetweenEnemies);
         }
     }
-    
+
     private void SpawnEnemy(int waveNumber)
     {
         if (pathManager.GetWaypoints().Length == 0)
             return;
-        
-        // Spawn at first waypoint
+
         Vector3 startPosition = pathManager.GetWaypoints()[0].position;
         GameObject enemy = Instantiate(enemyPrefab, startPosition, Quaternion.identity);
-        
-        // Set up enemy properties
-        SweetPotatoEnemy enemyScript = enemy.GetComponent<SweetPotatoEnemy>();
+
+        SweatPotatoEnemy enemyScript = enemy.GetComponent<SweatPotatoEnemy>();
         if (enemyScript != null)
         {
-            enemyScript.waypoints = pathManager.GetWaypoints();
-            
-            // Make enemies stronger in later waves
+            enemyScript.SetWaypoints(pathManager.GetWaypoints());
             float healthMultiplier = 1f + (waveNumber - 1) * 0.2f;
-            enemyScript.health *= healthMultiplier;
+            enemyScript.ApplyHealthMultiplier(healthMultiplier);
         }
     }
-    
+
     public void AddPoints(int points)
     {
         currentMoney += points;
         UpdateUI();
     }
-    
+
     public void LoseLife()
     {
         currentLives--;
         UpdateUI();
-        
+
         if (currentLives <= 0)
         {
             GameOver();
         }
     }
-    
+
     private void GameOver()
     {
-        // Stop game and show game over UI
         gameStarted = false;
-        
-        if (uiManager != null)
-        {
-            uiManager.ShowGameOverUI();
-        }
+        uiManager?.ShowGameOverUI();
     }
-    
+
     private void UpdateUI()
     {
         if (livesText != null)
             livesText.text = "Lives: " + currentLives;
-        
+
         if (moneyText != null)
             moneyText.text = "Money: " + currentMoney;
-        
+
         if (waveText != null)
             waveText.text = "Wave: " + currentWave + "/" + wavesCount;
     }
-    
+
     public void RestartGame()
     {
-        // Clean up existing objects
         foreach (GameObject tower in towers)
         {
             Destroy(tower);
         }
         towers.Clear();
-        
-        // Destroy all enemies
-        Enemy[] enemies = FindObjectsOfType<Enemy>();
-        foreach (Enemy enemy in enemies)
+
+        SweatPotatoEnemy[] enemies = FindObjectsOfType<SweatPotatoEnemy>();
+        foreach (SweatPotatoEnemy enemy in enemies)
         {
             Destroy(enemy.gameObject);
         }
-        
-        // Reset game state
+
         currentLives = startingLives;
         currentMoney = startingMoney;
         currentWave = 0;
         gameStarted = false;
         placementMode = false;
-        
-        // Clear path
+
         pathManager.ClearPath();
-        
-        // Update UI
         UpdateUI();
-        
-        // Re-enable plane tracking
+
         planeManager.enabled = true;
-        
-        // Hide start button
-        if (startGameButton != null)
-        {
-            startGameButton.SetActive(false);
-        }
-        
-        // Notify UI
-        if (uiManager != null)
-        {
-            uiManager.ShowPlaneDetectionUI();
-        }
+        startGameButton?.SetActive(false);
+        uiManager?.ShowPlaneDetectionUI();
     }
 }

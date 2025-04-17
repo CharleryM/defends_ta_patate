@@ -14,8 +14,8 @@ public class PotatoTowerArcher : MonoBehaviour
     public Transform firePoint;
 
     private float attackTimer;
-    private List<SweetPotatoEnemy> enemiesInRange = new List<SweetPotatoEnemy>();
-    private SweetPotatoEnemy targetEnemy;
+    private List<SweatPotatoEnemy> enemiesInRange = new List<SweatPotatoEnemy>();
+    private SweatPotatoEnemy targetEnemy;
 
     void Start()
     {
@@ -60,9 +60,9 @@ public class PotatoTowerArcher : MonoBehaviour
     private void FindClosestEnemy()
     {
         float closestDistance = float.MaxValue;
-        SweetPotatoEnemy closestEnemy = null;
+        SweatPotatoEnemy closestEnemy = null;
 
-        foreach (SweetPotatoEnemy enemy in enemiesInRange)
+        foreach (SweatPotatoEnemy enemy in enemiesInRange)
         {
             if (enemy == null) continue;
 
@@ -93,7 +93,7 @@ public class PotatoTowerArcher : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        SweetPotatoEnemy enemy = other.GetComponent<SweetPotatoEnemy>();
+        SweatPotatoEnemy enemy = other.GetComponent<SweatPotatoEnemy>();
         if (enemy != null && !enemiesInRange.Contains(enemy))
         {
             enemiesInRange.Add(enemy);
@@ -102,7 +102,7 @@ public class PotatoTowerArcher : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        SweetPotatoEnemy enemy = other.GetComponent<SweetPotatoEnemy>();
+        SweatPotatoEnemy enemy = other.GetComponent<SweatPotatoEnemy>();
         if (enemy != null)
         {
             enemiesInRange.Remove(enemy);

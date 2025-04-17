@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class SweetPotatoEnemy : MonoBehaviour
+public class SweatPotatoEnemy : MonoBehaviour
 {
     [Header("Enemy Stats")]
     [SerializeField] private float maxHealth = 100f;
@@ -13,12 +13,12 @@ public class SweetPotatoEnemy : MonoBehaviour
 
     private int currentWaypointIndex = 0;
     private float currentHealth;
-    private TowerDefenseGame gameManager;
+    private BasePotato gameManager;
 
     void Start()
     {
         currentHealth = maxHealth;
-        gameManager = FindObjectOfType<TowerDefenseGame>();
+        gameManager = FindObjectOfType<BasePotato>();
     }
 
     void Update()
@@ -54,6 +54,16 @@ public class SweetPotatoEnemy : MonoBehaviour
                 ReachEnd();
             }
         }
+    }
+    public void SetWaypoints(Transform[] newWaypoints)
+    {
+        waypoints = newWaypoints;
+    }
+
+    public void ApplyHealthMultiplier(float multiplier)
+    {
+        maxHealth *= multiplier;
+        currentHealth = maxHealth;
     }
 
     public void TakeDamage(float damage)
