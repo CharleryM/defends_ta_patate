@@ -191,7 +191,7 @@ public class TowerDefenseGame : MonoBehaviour
         GameObject enemy = Instantiate(enemyPrefab, startPosition, Quaternion.identity);
         
         // Set up enemy properties
-        Enemy enemyScript = enemy.GetComponent<Enemy>();
+        SweetPotatoEnemy enemyScript = enemy.GetComponent<SweetPotatoEnemy>();
         if (enemyScript != null)
         {
             enemyScript.waypoints = pathManager.GetWaypoints();
