@@ -4488,15 +4488,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fad2cebdeb5343378f697ce863f35e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyTypes: []
-  target: {fileID: 0}
+  enemyTypes:
+  - prefab: {fileID: 8090173444359515454}
+    health: 10
+    speed: 10
+    reward: 10
+    damage: 10
+  target: {fileID: 5114651872123353386}
   spawnHeight: 0.1
   minSpawnDistance: 2
   maxSpawnDistance: 5
   baseEnemiesPerWave: 5
   spawnInterval: 2
-  gameManager: {fileID: 0}
-  planeManager: {fileID: 0}
+  gameManager: {fileID: 1192352210}
+  planeManager: {fileID: 151853166}
 --- !u!4 &1019268375
 Transform:
   m_ObjectHideFlags: 0
@@ -7635,10 +7640,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b3f39e39e4954fe99ee2afdb81ca85a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerPrefab: {fileID: 0}
-  planeManager: {fileID: 0}
+  towerPrefab: {fileID: 5114651872123353387}
+  planeManager: {fileID: 151853166}
   towerCost: 100
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 1192352210}
 --- !u!4 &1847463122
 Transform:
   m_ObjectHideFlags: 0
@@ -8307,19 +8312,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb324be4a3614c869935b2ef24cfaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerSelectionPanel: {fileID: 0}
-  towerPlacement: {fileID: 0}
-  gameManager: {fileID: 0}
-  basicTowerButton: {fileID: 0}
+  towerSelectionPanel: {fileID: 1834221297}
+  towerPlacement: {fileID: 1847463121}
+  gameManager: {fileID: 1192352210}
+  basicTowerButton: {fileID: 1834221299}
   missileTowerButton: {fileID: 0}
   laserTowerButton: {fileID: 0}
   currencyText: {fileID: 0}
-  livesText: {fileID: 0}
-  waveText: {fileID: 0}
-  gameOverPanel: {fileID: 0}
-  restartButton: {fileID: 0}
+  livesText: {fileID: 17457368}
+  waveText: {fileID: 1939935591}
+  gameOverPanel: {fileID: 899213354}
+  restartButton: {fileID: 1329884733}
   closeSelectionButton: {fileID: 0}
-  basicTowerPrefab: {fileID: 0}
+  basicTowerPrefab: {fileID: 5114651872123353387}
   missileTowerPrefab: {fileID: 0}
   laserTowerPrefab: {fileID: 0}
 --- !u!114 &1948505846
@@ -9741,6 +9746,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 373876db6c0aa487e9b2955a781ac923, type: 3}
+--- !u!4 &5114651872123353386 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7758455670658323902, guid: 373876db6c0aa487e9b2955a781ac923,
+    type: 3}
+  m_PrefabInstance: {fileID: 5114651872123353385}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5114651872123353387 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 310276290716802308, guid: 373876db6c0aa487e9b2955a781ac923,
+    type: 3}
+  m_PrefabInstance: {fileID: 5114651872123353385}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5214591598045136834
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10025,6 +10042,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25e9ba79e952e487d955c1477543d323, type: 3}
+--- !u!1 &8090173444359515454 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2776679315695942893, guid: 25e9ba79e952e487d955c1477543d323,
+    type: 3}
+  m_PrefabInstance: {fileID: 8090173444359515453}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8125528244411619094
 PrefabInstance:
   m_ObjectHideFlags: 0
