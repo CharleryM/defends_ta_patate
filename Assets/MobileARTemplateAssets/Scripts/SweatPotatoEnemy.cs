@@ -8,6 +8,7 @@ public class SweatPotatoEnemy : MonoBehaviour
     [SerializeField] private float speed = 1.0f;
     [SerializeField] private int pointsValue = 10;
 
+
     [Header("Path Following")]
     [SerializeField] private Transform[] waypoints;
 
@@ -18,13 +19,14 @@ public class SweatPotatoEnemy : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+        gameObject.tag = "Enemy";
         gameManager = FindObjectOfType<BasePotato>();
+        Debug.Log("Enemy trouvé");
     }
 
     void Update()
     {
         if (waypoints == null || waypoints.Length == 0) return;
-
         MoveAlongPath();
     }
 
@@ -82,7 +84,7 @@ public class SweatPotatoEnemy : MonoBehaviour
         {
             gameManager.AddPoints(pointsValue);
         }
-
+        Debug.Log("💀 Ennemi détruit !");
         Destroy(gameObject);
     }
 
