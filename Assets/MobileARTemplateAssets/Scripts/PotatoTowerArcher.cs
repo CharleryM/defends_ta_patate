@@ -12,6 +12,7 @@ public class PotatoTowerArcher : MonoBehaviour
     [Header("Shooting")]
     public GameObject projectilePrefab;
     public Transform firePoint;
+    public float firePower;
 
     private float attackTimer;
     private List<SweatPotatoEnemy> enemiesInRange = new List<SweatPotatoEnemy>();
@@ -20,16 +21,16 @@ public class PotatoTowerArcher : MonoBehaviour
     void Start()
     {
         attackTimer = attackDelay;
-
         SphereCollider rangeCollider = gameObject.AddComponent<SphereCollider>();
         rangeCollider.radius = range;
         rangeCollider.isTrigger = true;
+        Debug.Log("Tower");
     }
 
     void Update()
     {
         enemiesInRange.RemoveAll(e => e == null);
-        FindClosestEnemy();
+        targetEnemy = FindClosestEnemy();
 
         if (targetEnemy != null)
         {
@@ -37,7 +38,7 @@ public class PotatoTowerArcher : MonoBehaviour
 
             attackTimer -= Time.deltaTime;
 
-            if (attackTimer <= 0)
+            if (attackTimer <= 0f)
             {
                 FireProjectile();
                 attackTimer = attackDelay;
@@ -57,7 +58,7 @@ public class PotatoTowerArcher : MonoBehaviour
         }
     }
 
-    private void FindClosestEnemy()
+    private SweatPotatoEnemy FindClosestEnemy()
     {
         float closestDistance = float.MaxValue;
         SweatPotatoEnemy closestEnemy = null;
@@ -74,21 +75,14 @@ public class PotatoTowerArcher : MonoBehaviour
             }
         }
 
-        targetEnemy = closestEnemy;
+        return closestEnemy;
     }
 
-    private void FireProjectile()
+    void FireProjectile()
     {
-        if (projectilePrefab != null && targetEnemy != null && firePoint != null)
-        {
-            GameObject projectile = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
-            Projectile projectileScript = projectile.GetComponent<Projectile>();
-
-            if (projectileScript != null)
-            {
-                projectileScript.SetTarget(targetEnemy.gameObject);
-            }
-        }
+        GameObject arrow = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+        arrow.GetComponent<Rigidbody>().AddForce(firePoint.transform.forward * firePower, ForceMode.Impulse );
+        // TODO :  À CHANGER POUR METTRE LA POSITION DE L'ENNEMI LE PLUS PRÈS 
     }
 
     private void OnTriggerEnter(Collider other)
@@ -97,6 +91,13 @@ public class PotatoTowerArcher : MonoBehaviour
         if (enemy != null && !enemiesInRange.Contains(enemy))
         {
             enemiesInRange.Add(enemy);
+
+            // Recalcule immédiatement la cible
+            targetEnemy = FindClosestEnemy();
+
+            // Tire instantanément
+            FireProjectile();
+            attackTimer = attackDelay;
         }
     }
 
