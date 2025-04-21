@@ -4,7 +4,6 @@ public class CollisionHandler : MonoBehaviour
 {
     [Header("Damage Settings")]
     public float damageOnCollision = 10f;
-
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
@@ -21,6 +20,12 @@ public class CollisionHandler : MonoBehaviour
             {
                 Debug.LogWarning("⚠️ Aucun script SweatPotatoEnemy trouvé sur " + collision.gameObject.name);
             }
+        }
+
+        if (collision.gameObject.CompareTag("towerDefance"))
+        {
+            Destroy(gameObject);
+            Debug.Log("détrui par " + gameObject.name);
         }
     }
 }

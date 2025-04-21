@@ -9,7 +9,6 @@ public class StraightArrow : MonoBehaviour
     void Start()
     {
         Destroy(gameObject, lifetime);
-        Debug.Log("Straight");
     }
 
     void Update()
