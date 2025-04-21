@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class PotatoTowerArcher : MonoBehaviour
 {
     [Header("Tower Settings")]
-    public float range = 3.0f;
+    public float range = 30.0f;
     public float attackDelay = 1.0f;
     public float rotationSpeed = 5.0f;
     public float towerCost = 100f;
