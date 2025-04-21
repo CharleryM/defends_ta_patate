@@ -1,44 +1,50 @@
 using UnityEngine;
-using System.Collections;
 
 public class SweatPotatoEnemy : MonoBehaviour
 {
     [Header("Enemy Stats")]
     [SerializeField] private float maxHealth = 100f;
-    [SerializeField] private float speed = 1.0f;
+    [SerializeField] private float speed = 5.0f;
     [SerializeField] private int pointsValue = 10;
 
-
-    [Header("Path Following")]
-    [SerializeField] private Transform[] waypoints;
-
-    private int currentWaypointIndex = 0;
     private float currentHealth;
+    private Transform baseTarget;
     private BasePotato gameManager;
 
     void Start()
     {
         currentHealth = maxHealth;
         gameObject.tag = "Enemy";
-        gameManager = FindObjectOfType<BasePotato>();
-        Debug.Log("Enemy trouvé");
+
+        GameObject baseObj = GameObject.FindGameObjectWithTag("BasePotato");
+        if (baseObj != null)
+        {
+            baseTarget = baseObj.transform;
+            gameManager = baseObj.GetComponent<BasePotato>();
+        }
+
+        if (baseTarget == null)
+        {
+            Debug.LogError("Aucun objet avec le tag 'BasePotato' trouvé !");
+        }
+        else
+        {
+            Debug.Log("Cible détectée : BasePotato");
+        }
     }
 
     void Update()
     {
-        if (waypoints == null || waypoints.Length == 0) return;
-        MoveAlongPath();
+        if (baseTarget == null) return;
+
+        MoveTowardsBase();
     }
 
-    private void MoveAlongPath()
+    private void MoveTowardsBase()
     {
-        Transform targetWaypoint = waypoints[currentWaypointIndex];
-        Vector3 targetPosition = new Vector3(targetWaypoint.position.x, transform.position.y, targetWaypoint.position.z);
-
-        // Déplacement
+        Vector3 targetPosition = new Vector3(baseTarget.position.x, transform.position.y, baseTarget.position.z);
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
 
-        // Rotation vers la direction de mouvement
         Vector3 direction = targetPosition - transform.position;
         if (direction != Vector3.zero)
         {
@@ -46,20 +52,21 @@ public class SweatPotatoEnemy : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 5f * Time.deltaTime);
         }
 
-        // Si on atteint le waypoint
-        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+        if (Vector3.Distance(transform.position, targetPosition) < 0.5f)
         {
-            currentWaypointIndex++;
-
-            if (currentWaypointIndex >= waypoints.Length)
-            {
-                ReachEnd();
-            }
+            ReachBase();
         }
     }
-    public void SetWaypoints(Transform[] newWaypoints)
+
+    private void ReachBase()
     {
-        waypoints = newWaypoints;
+        if (gameManager != null)
+        {
+            gameManager.LoseLife(20);
+        }
+
+        Debug.Log("L'ennemi a atteint la base !");
+        Destroy(gameObject);
     }
 
     public void ApplyHealthMultiplier(float multiplier)
@@ -71,6 +78,7 @@ public class SweatPotatoEnemy : MonoBehaviour
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
+        // Debug.Log($"[Enemy: {gameObject.name}] Touché - PV restants : {currentHealth}");
 
         if (currentHealth <= 0f)
         {
@@ -84,17 +92,8 @@ public class SweatPotatoEnemy : MonoBehaviour
         {
             gameManager.AddPoints(pointsValue);
         }
+
         Debug.Log("💀 Ennemi détruit !");
-        Destroy(gameObject);
-    }
-
-    private void ReachEnd()
-    {
-        if (gameManager != null)
-        {
-            gameManager.LoseLife();
-        }
-
         Destroy(gameObject);
     }
 }

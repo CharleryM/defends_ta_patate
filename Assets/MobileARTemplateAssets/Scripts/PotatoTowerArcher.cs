@@ -1,13 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 public class PotatoTowerArcher : MonoBehaviour
 {
     [Header("Tower Settings")]
-    public float range = 30.0f;
+    public float range = 100.0f;
     public float attackDelay = 1.0f;
     public float rotationSpeed = 5.0f;
-    public float towerCost = 100f;
+    public float maxHealth = 100;
+    // public float towerCost = 100f;
 
     [Header("Shooting")]
     public GameObject projectilePrefab;
@@ -15,16 +17,17 @@ public class PotatoTowerArcher : MonoBehaviour
     public float firePower;
 
     private float attackTimer;
+    private float currentHealth;
     private List<SweatPotatoEnemy> enemiesInRange = new List<SweatPotatoEnemy>();
     private SweatPotatoEnemy targetEnemy;
 
-    void Start()
+    private void Start()
     {
         attackTimer = attackDelay;
+        currentHealth = maxHealth;
         SphereCollider rangeCollider = gameObject.AddComponent<SphereCollider>();
         rangeCollider.radius = range;
         rangeCollider.isTrigger = true;
-        Debug.Log("Tower");
     }
 
     void Update()
@@ -99,6 +102,11 @@ public class PotatoTowerArcher : MonoBehaviour
             FireProjectile();
             attackTimer = attackDelay;
         }
+    }
+
+    public void LoseLife(float damage)
+    {
+        Debug.Log($"TowerArcher touchée ! HP restants : {currentHealth}");
     }
 
     private void OnTriggerExit(Collider other)

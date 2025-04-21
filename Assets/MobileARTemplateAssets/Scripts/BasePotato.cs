@@ -18,12 +18,13 @@ public class BasePotato : MonoBehaviour
     public GameObject startGameButton;
     
     [Header("Game Settings")]
-    public int startingLives = 5;
-    public int startingMoney = 200;
-    public int wavesCount = 5;
-    public float timeBetweenWaves = 30f;
-    public int enemiesPerWave = 5;
-    public float timeBetweenEnemies = 2f;
+    // public int startingLives = 5;
+    // public int startingMoney = 200;
+    // public int wavesCount = 5;
+    // public float timeBetweenWaves = 30f;
+    // public int enemiesPerWave = 5;
+    // public float timeBetweenEnemies = 2f;
+    public float maxHealth = 100f;
     
     [Header("UI Components")]
     public TowerDefenseUI uiManager;
@@ -36,20 +37,23 @@ public class BasePotato : MonoBehaviour
     private int currentWave = 0;
     private bool gameStarted = false;
     private bool placementMode = false;
+    private float currentHealth;
     private PathManager pathManager;
     private GameObject selectedPlane;
     private List<GameObject> towers = new List<GameObject>();
     
     private void Start()
     {
+        currentHealth = maxHealth;
+        gameObject.tag = "BasePotato";
         pathManager = GetComponent<PathManager>();
         if (pathManager == null)
         {
             pathManager = gameObject.AddComponent<PathManager>();
         }
 
-        currentLives = startingLives;
-        currentMoney = startingMoney;
+        // currentLives = startingLives;
+        // currentMoney = startingMoney;
         UpdateUI();
 
         if (startGameButton != null)
@@ -105,12 +109,12 @@ public class BasePotato : MonoBehaviour
                         GameObject tower = Instantiate(towerPrefab, hitPosition, Quaternion.identity);
                         towers.Add(tower);
 
-                        PotatoTowerArcher towerScript = tower.GetComponent<PotatoTowerArcher>();
-                        if (towerScript != null)
-                        {
-                            currentMoney -= (int)towerScript.towerCost;
-                            UpdateUI();
-                        }
+                        //PotatoTowerArcher towerScript = tower.GetComponent<PotatoTowerArcher>();
+                        //if (towerScript != null)
+                        //{
+                          //  currentMoney -= (int)towerScript.towerCost;
+                           // UpdateUI();
+                        //}
                     }
                 }
             }
@@ -123,31 +127,31 @@ public class BasePotato : MonoBehaviour
 
         gameStarted = true;
         startGameButton?.SetActive(false);
-        StartCoroutine(SpawnWaves());
+        // StartCoroutine(SpawnWaves());
     }
 
-    private IEnumerator SpawnWaves()
-    {
-        for (int wave = 1; wave <= wavesCount; wave++)
-        {
-            currentWave = wave;
-            UpdateUI();
+    // private IEnumerator SpawnWaves()
+    // {
+    //  for (int wave = 1; wave <= wavesCount; wave++)
+    //  {
+    //      currentWave = wave;
+    //      UpdateUI();
 
-            yield return StartCoroutine(SpawnWave(wave));
-            yield return new WaitForSeconds(timeBetweenWaves);
-        }
-    }
+    //      yield return StartCoroutine(SpawnWave(wave));
+    //      yield return new WaitForSeconds(timeBetweenWaves);
+    //  }
+    // }
 
-    private IEnumerator SpawnWave(int waveNumber)
-    {
-        int enemiesToSpawn = enemiesPerWave + (waveNumber - 1) * 2;
+    // private IEnumerator SpawnWave(int waveNumber)
+    // {
+    //  int enemiesToSpawn = enemiesPerWave + (waveNumber - 1) * 2;
 
-        for (int i = 0; i < enemiesToSpawn; i++)
-        {
-            SpawnEnemy(waveNumber);
-            yield return new WaitForSeconds(timeBetweenEnemies);
-        }
-    }
+    //  for (int i = 0; i < enemiesToSpawn; i++)
+    //  {
+    //      SpawnEnemy(waveNumber);
+    //      yield return new WaitForSeconds(timeBetweenEnemies);
+    //  }
+    // }
 
     private void SpawnEnemy(int waveNumber)
     {
@@ -160,7 +164,15 @@ public class BasePotato : MonoBehaviour
         SweatPotatoEnemy enemyScript = enemy.GetComponent<SweatPotatoEnemy>();
         if (enemyScript != null)
         {
-            enemyScript.SetWaypoints(pathManager.GetWaypoints());
+            Transform[] path = pathManager.GetWaypoints();
+
+            List<Transform> fullPath = new List<Transform>(path);
+
+            // Ajouter la base comme dernier waypoint
+            fullPath.Add(this.transform);
+
+            // enemyScript.SetWaypoints(fullPath.ToArray());
+            
             float healthMultiplier = 1f + (waveNumber - 1) * 0.2f;
             enemyScript.ApplyHealthMultiplier(healthMultiplier);
         }
@@ -172,15 +184,18 @@ public class BasePotato : MonoBehaviour
         UpdateUI();
     }
 
-    public void LoseLife()
+    public void LoseLife(float damage)
     {
-        currentLives--;
-        UpdateUI();
-
-        if (currentLives <= 0)
+        currentHealth -= damage;
+        Debug.Log($"Base touchée ! HP restants : {currentHealth}");
+        
+        if (currentHealth <= 0)
         {
             GameOver();
+            Destroy(gameObject);
+            Debug.Log("La tour n'a plus de PV ! Game Over !");
         }
+        UpdateUI();
     }
 
     private void GameOver()
@@ -197,8 +212,8 @@ public class BasePotato : MonoBehaviour
         if (moneyText != null)
             moneyText.text = "Money: " + currentMoney;
 
-        if (waveText != null)
-            waveText.text = "Wave: " + currentWave + "/" + wavesCount;
+        // if (waveText != null)
+        //  waveText.text = "Wave: " + currentWave + "/" + wavesCount;
     }
 
     public void RestartGame()
@@ -215,8 +230,8 @@ public class BasePotato : MonoBehaviour
             Destroy(enemy.gameObject);
         }
 
-        currentLives = startingLives;
-        currentMoney = startingMoney;
+        // currentLives = startingLives;
+        // currentMoney = startingMoney;
         currentWave = 0;
         gameStarted = false;
         placementMode = false;
