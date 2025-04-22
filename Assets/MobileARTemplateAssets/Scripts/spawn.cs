@@ -5,6 +5,8 @@ public class spawn : MonoBehaviour
     public GameObject prefabToSpawn;
     public Transform target; // L'objet vers lequel l'élément va se déplacer
     public float spawnRadius = 25f;
+    public float spawnDelay = 2f;
+    public float timer = 0f;
 
     void Start()
     {
@@ -12,12 +14,18 @@ public class spawn : MonoBehaviour
 
     void Update()
     {
-        Spawn();
+        timer += Time.deltaTime;
+
+        if (timer >= spawnDelay)
+        {
+            Spawn();
+            timer = 0f;
+        }
+        
     }
 
     void Spawn()
     {
-        // Position aléatoire autour du spawner
         Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
         Vector3 spawnPosition = new Vector3(
             transform.position.x + randomCircle.x,
@@ -27,7 +35,6 @@ public class spawn : MonoBehaviour
 
         GameObject spawned = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
 
-        // On passe la cible à l'objet qui va se déplacer
         EnemyMouving mover = spawned.GetComponent<EnemyMouving>();
         if (mover != null)
         {
